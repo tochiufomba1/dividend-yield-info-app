@@ -48,7 +48,7 @@ export async function searchTickers(query: string, limit: number = 50): Promise<
         limit: limit.toString(),
     });
 
-    const url = `${import.meta.env.BACKEND}/api/stocks/search?${params}`;
+    const url = `${import.meta.env.VITE_API_URL}/api/stocks/search?${params}`;
 
     const response = await fetch(url);
 
@@ -58,19 +58,19 @@ export async function searchTickers(query: string, limit: number = 50): Promise<
 }
 
 export async function getStock(ticker: string): Promise<StockData> {
-    const response = await fetch(`${import.meta.env.BACKEND}/api/stocks/${ticker}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/stocks/${ticker}`);
     return await response.json()
 }
 
 export async function getTickers(): Promise<TickersResponse> {
-    const response = await fetch(`${import.meta.env.BACKEND}/api/stocks/tickers`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/stocks/tickers`);
     const ret: TickersResponse = await response.json()
     return ret
 }
 
 export async function getBatchStocks(tickers: string[]): Promise<BatchStocksResponse> {
     const response = await fetch(
-        `${import.meta.env.BACKEND}/api/stocks/batch`,
+        `${import.meta.env.VITE_API_URL}/api/stocks/batch`,
         {
             method: 'POST',
             headers: {

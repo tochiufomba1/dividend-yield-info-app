@@ -32,7 +32,7 @@ export function useSnapshot() {
     const subscribeToProgress = useCallback(() => {
         if (eventSourceRef.current) return; // Already subscribed
 
-        const source = new EventSource(`${import.meta.env.BACKEND}/api/snapshot/progress`);
+        const source = new EventSource(`${import.meta.env.VITE_API_URL}/api/snapshot/progress`);
         eventSourceRef.current = source;
 
         source.onmessage = (event) => {
@@ -59,13 +59,13 @@ export function useSnapshot() {
     // Fetch the finished snapshot from the REST endpoint
     const fetchSnapshot = useCallback(async () => {
         try {
-            const res = await fetch(`${import.meta.env.BACKEND}/api/snapshot`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/snapshot`);
             const body = await res.json();
 
             if (!res.ok) {
                 // Snapshot not ready yet — job may be running
                 if (body.error === 'NOT_READY') {
-                    const statusRes = await fetch(`${import.meta.env.BACKEND}/api/snapshot/status`);
+                    const statusRes = await fetch(`${import.meta.env.VITE_API_URL}/api/snapshot/status`);
                     const statusBody = await statusRes.json();
 
                     setState(prev => ({
@@ -100,7 +100,7 @@ export function useSnapshot() {
         setState(prev => ({ ...prev, error: null }));
 
         try {
-            const res = await fetch(`${import.meta.env.BACKEND}/api/snapshot/trigger`, { method: 'POST' });
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/snapshot/trigger`, { method: 'POST' });
             const body = await res.json();
 
             if (!res.ok) {
