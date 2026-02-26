@@ -1,0 +1,72 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2022", // Target ECMAScript version (modern Node.js supports ES2022)
+    "lib": [
+      "ES2022"
+    ], // Standard library to include in compilation
+    /* Modules */
+    "module": "commonjs", // Module system (CommonJS for Node.js)
+    "moduleResolution": "node", // Module resolution strategy
+    "esModuleInterop": true, // Emit additional JS to ease support for importing CommonJS modules
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
+    "resolveJsonModule": true, // Allow importing JSON files
+    /* Emit */
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of source files
+    "declaration": true, // Generate .d.ts declaration files
+    "declarationMap": true, // Generate sourcemap for .d.ts files (for IDEs)
+    "sourceMap": true, // Generate .js.map files for debugging
+    "removeComments": false, // Keep comments in compiled output
+    "noEmit": false, // Actually emit files (set to true for type-checking only)
+    "incremental": true, // Enable incremental compilation for faster rebuilds
+    /* Type Checking */
+    "strict": true, // Enable all strict type-checking options
+    "noImplicitAny": true, // Error on expressions with implied 'any' type
+    "strictNullChecks": true, // Enable strict null checks
+    "strictFunctionTypes": true, // Enable strict checking of function types
+    "strictBindCallApply": true, // Enable strict 'bind', 'call', and 'apply' methods
+    "strictPropertyInitialization": true, // Check for class properties that are declared but not set
+    "noImplicitThis": true, // Error when 'this' has type 'any'
+    "alwaysStrict": true, // Parse in strict mode and emit "use strict"
+    /* Additional Checks */
+    //"noUnusedLocals": true, // Error on unused local variables
+    //"noUnusedParameters": true, // Error on unused function parameters
+    "noImplicitReturns": true, // Error when not all code paths return a value
+    //"noFallthroughCasesInSwitch": true, // Error on fallthrough cases in switch statements
+    "noUncheckedIndexedAccess": false, // Add 'undefined' to index signature results
+    /* Interop Constraints */
+    "isolatedModules": true, // Ensure each file can be safely transpiled without relying on other imports
+    "forceConsistentCasingInFileNames": true, // Ensure casing is correct in imports
+    "skipLibCheck": true, // Skip type checking of declaration files (faster builds)
+    /* Type Acquisition */
+    "types": [
+      "node",
+    ] // Type declaration files to include
+  },
+  /* Include/Exclude */
+  "include": [
+    "src/**/*" // Include all files in src directory
+  ],
+  "exclude": [
+    "node_modules", // Exclude dependencies
+    "dist", // Exclude build output
+    "**/*.test.ts", // Exclude test files from build
+    "**/*.spec.ts" // Exclude spec files from build
+  ],
+  /* Project References (optional, for monorepos) */
+  // "references": [
+  //   { "path": "../shared" }
+  // ],
+  /* Watch Options (for development) */
+  "watchOptions": {
+    "watchFile": "useFsEvents", // Use file system events (faster on macOS/Linux)
+    "watchDirectory": "useFsEvents", // Use file system events for directories
+    "fallbackPolling": "dynamicPriority", // Fallback strategy when fs events aren't available
+    "synchronousWatchDirectory": true, // Synchronously watch directories
+    "excludeDirectories": [
+      "**/node_modules",
+      "dist"
+    ]
+  }
+}
