@@ -8,7 +8,6 @@ interface ShowAllButtonProps {
 
 export function ShowAllButton({ onData }: ShowAllButtonProps) {
     const {
-        status,
         progress,
         data,
         error,

@@ -186,20 +186,20 @@ export default function Canvas({
             tooltip.innerHTML = `
         <div class="tooltip-content">
           <div class="tooltip-header">
-            <strong>${foundStock.data.ticker}</strong>
+            <strong>${(foundStock as StockPosition).data.ticker}</strong>
           </div>
           <div class="tooltip-body">
             <div class="tooltip-row">
               <span class="tooltip-label">Name:</span>
-              <span class="tooltip-value">${foundStock.data.name}</span>
+              <span class="tooltip-value">${(foundStock as StockPosition).data.name}</span>
             </div>
             <div class="tooltip-row">
               <span class="tooltip-label">Sector:</span>
-              <span class="tooltip-value">${foundStock.data.sector}</span>
+              <span class="tooltip-value">${(foundStock as StockPosition).data.sector}</span>
             </div>
             <div class="tooltip-row">
               <span class="tooltip-label">Dividend Yield:</span>
-              <span class="tooltip-value">${foundStock.data.yield.toFixed(2)}%</span>
+              <span class="tooltip-value">${(foundStock as StockPosition).data.yield.toFixed(2)}%</span>
             </div>
           </div>
         </div>
