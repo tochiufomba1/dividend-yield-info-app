@@ -20,6 +20,7 @@
     "removeComments": false, // Keep comments in compiled output
     "noEmit": false, // Actually emit files (set to true for type-checking only)
     "incremental": true, // Enable incremental compilation for faster rebuilds
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     /* Type Checking */
     "strict": true, // Enable all strict type-checking options
     "noImplicitAny": true, // Error on expressions with implied 'any' type
