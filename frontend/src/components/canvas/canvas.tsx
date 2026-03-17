@@ -2,9 +2,11 @@ import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import { draw } from './canvasUtils';
 import { sectors } from './constants';
 import type { StockData, StockPosition, CanvasConfig } from './types';
+import type { CustomTickerData } from '@/hooks/useCustomTickers';
 
 interface CanvasProps {
     stocks: StockData[];
+    customInvestments: CustomTickerData[];
     loading?: boolean;
     className?: string;
     width?: number;
@@ -20,6 +22,7 @@ interface Transform {
 
 export default function Canvas({
     stocks,
+    customInvestments,
     loading = false,
     className,
     width = 800,
@@ -31,6 +34,8 @@ export default function Canvas({
 
     // Store calculated positions without mutating stock data
     const stockPositionsRef = useRef<Map<string, StockPosition>>(new Map());
+
+    const customInvestmentsPostionsRef = useRef<Map<string, StockPosition>>(new Map());
 
     // Transform state for zoom and pan
     const [transform, setTransform] = useState<Transform>({
@@ -68,8 +73,10 @@ export default function Canvas({
             config,
             sectors,
             stocks,
+            customInvestments,
             showLabels && transform.scale > 0.8, // Hide labels when zoomed out
             stockPositionsRef.current, // Pass ref to be populated
+            customInvestmentsPostionsRef.current,
             transform
         );
     }, [transform, config, stocks, showLabels]);
@@ -94,7 +101,6 @@ export default function Canvas({
 
     // Handle mouse wheel for zooming
     const handleWheel = useCallback((e: React.WheelEvent<HTMLCanvasElement>) => {
-        e.preventDefault();
 
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -181,6 +187,17 @@ export default function Canvas({
             }
         });
 
+        customInvestmentsPostionsRef.current.forEach((position) => {
+            const dx = canvasCoords.x - position.x;
+            const dy = canvasCoords.y - position.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < hitRadius && distance < minDistance) {
+                foundStock = position;
+                minDistance = distance;
+            }
+        });
+
         if (foundStock) {
             // Show tooltip
             tooltip.innerHTML = `
@@ -199,7 +216,7 @@ export default function Canvas({
             </div>
             <div class="tooltip-row">
               <span class="tooltip-label">Dividend Yield:</span>
-              <span class="tooltip-value">${(foundStock as StockPosition).data.yield.toFixed(2)}%</span>
+              <span class="tooltip-value">${(foundStock as StockPosition).data.yield}%</span> <!-- .toFixed(2) -->
             </div>
           </div>
         </div>

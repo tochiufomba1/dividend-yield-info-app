@@ -1,0 +1,127 @@
+/* Custom Ticker Container */
+.custom-ticker-container {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+/* Header */
+.custom-ticker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.custom-ticker-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.clear-all-btn {
+  padding: 4px 10px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-all-btn:hover {
+  background: #f5f5f5;
+  border-color: #bdbdbd;
+  color: #333;
+}
+
+/* Chips Container */
+.custom-ticker-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Individual Chip - Styled like react-select */
+.custom-ticker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px 6px 10px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.custom-ticker-chip:hover {
+  background: #bbdefb;
+  border-color: #64b5f6;
+}
+
+/* Chip Content */
+.chip-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip-ticker {
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.chip-yield {
+  color: #1976d2;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Remove Button */
+.chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #1565c0;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s ease;
+}
+
+.chip-remove:hover {
+  background: #1976d2;
+  color: white;
+}
+
+.chip-remove:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 1px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .custom-ticker-container {
+    padding: 12px;
+  }
+
+  .custom-ticker-chips {
+    gap: 6px;
+  }
+
+  .custom-ticker-chip {
+    font-size: 12px;
+  }
+}

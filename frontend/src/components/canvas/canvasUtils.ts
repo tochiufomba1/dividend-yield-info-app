@@ -1,3 +1,4 @@
+import type { CustomTickerData } from '@/hooks/useCustomTickers';
 import type { StockData, StockPosition, CanvasConfig, Sector, SectorAngles } from './types';
 
 /**
@@ -183,8 +184,10 @@ export function draw(
     config: CanvasConfig,
     sectors: Sector[],
     stocks: StockData[],
+    customTickers: CustomTickerData[],
     showLabels: boolean,
     stockPositions: Map<string, StockPosition>,
+    customInvestmentPostions: Map<string, StockPosition>,
     transform: any
 ): void {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -198,5 +201,6 @@ export function draw(
     drawYieldCircles(ctx, config);
     drawSectors(ctx, config, sectors);
     drawStocks(ctx, config, sectors, stocks, showLabels, stockPositions);
+    drawStocks(ctx, config, sectors, customTickers, showLabels, customInvestmentPostions);
     drawCenterPoint(ctx, config);
 }

@@ -10,6 +10,9 @@ import Canvas from "./components/canvas/canvas";
 import type { SnapshotEntry } from "./components/canvas/types";
 import { ShowAllButton } from "./components/show-all-button";
 import { isDefined } from "./lib/utils";
+import CustomTickerDialog from "./components/add-custom-ticker-button";
+import { useCustomTickers } from "./hooks/useCustomTickers";
+import { CustomTickerChips } from "./components/custom-ticker-chips";
 
 interface OptionType {
   value: string;
@@ -19,6 +22,7 @@ interface OptionType {
 function App() {
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
   const [snapshotStocks, setSnapshotStocks] = useState<SnapshotEntry[] | null>(null);
+  const {data, addCustomTicker, removeCustomTicker, clearCustomTickers, hasCustomTicker } = useCustomTickers()
 
   // Fetch data for selected stocks
   const {
@@ -167,6 +171,11 @@ function App() {
               </button>
             </div>
           )}
+
+            <div className="flex">
+              <CustomTickerChips tickers={data} onRemove={removeCustomTicker} onClearAll={clearCustomTickers} />
+              <CustomTickerDialog addTicker={addCustomTicker} hasTicker={hasCustomTicker}/>
+            </div>
         </div>
       )}
 
@@ -183,6 +192,7 @@ function App() {
 
       <Canvas
         stocks={stocksForCanvas}
+        customInvestments={data}
         loading={stocksLoading && !snapshotStocks}
       />
 
