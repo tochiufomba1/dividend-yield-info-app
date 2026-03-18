@@ -5,7 +5,6 @@ import { createClient, type RedisClientType } from 'redis';
 import { createStockRoutes, errorHandler } from './routes';
 import { Server } from 'http';
 import config from './config/config';
-import cron from 'node-cron'
 import { runSnapshotJob } from './snapshotJob';
 import { createSnapshotRoutes } from './snapshotRoutes';
 
@@ -78,13 +77,6 @@ async function createApp(): Promise<AppComponents> {
     // Global error handler
     app.use(errorHandler);
 
-    // ── Cron: rebuild snapshot every night at 2 AM ─────────────────────────────
-    cron.schedule('0 2 * * *', () => {
-        console.log('[cron] Triggering nightly snapshot job...');
-        runSnapshotJob(redisClient).catch(err =>
-            console.error('[cron] Snapshot job failed:', err)
-        );
-    });
     console.log('⏰ Nightly snapshot job scheduled for 02:00');
 
     // ── Server ─────────────────────────────────────────────────────────────────
