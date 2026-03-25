@@ -13,6 +13,8 @@ import { isDefined } from "./lib/utils";
 import CustomTickerDialog from "./components/add-custom-ticker-button";
 import { useCustomTickers } from "./hooks/useCustomTickers";
 import { CustomTickerChips } from "./components/custom-ticker-chips";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+import StocksTable from "./components/stocks-table";
 
 interface OptionType {
   value: string;
@@ -22,7 +24,7 @@ interface OptionType {
 function App() {
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
   const [snapshotStocks, setSnapshotStocks] = useState<SnapshotEntry[] | null>(null);
-  const {data, addCustomTicker, removeCustomTicker, clearCustomTickers, hasCustomTicker } = useCustomTickers()
+  const { data: customInvestments, addCustomTicker, removeCustomTicker, clearCustomTickers, hasCustomTicker } = useCustomTickers()
 
   // Fetch data for selected stocks
   const {
@@ -86,7 +88,6 @@ function App() {
       {/* Show All Stocks button — triggers background job */}
       <ShowAllButton onData={setSnapshotStocks} />
 
-
       {/* Individual stock search — hidden while snapshot is active */}
       {!snapshotStocks && (
         <div className="controls">
@@ -137,10 +138,6 @@ function App() {
                   },
                 }),
               }}
-
-
-            // Performance - debounce search
-            // (AsyncSelect handles this internally, but you can add more delay if needed)
             />
 
             <div className="help-text">
@@ -172,10 +169,10 @@ function App() {
             </div>
           )}
 
-            <div className="flex">
-              <CustomTickerChips tickers={data} onRemove={removeCustomTicker} onClearAll={clearCustomTickers} />
-              <CustomTickerDialog addTicker={addCustomTicker} hasTicker={hasCustomTicker}/>
-            </div>
+          <div className="flex">
+            <CustomTickerChips tickers={customInvestments} onRemove={removeCustomTicker} onClearAll={clearCustomTickers} />
+            <CustomTickerDialog addTicker={addCustomTicker} hasTicker={hasCustomTicker} />
+          </div>
         </div>
       )}
 
@@ -190,13 +187,23 @@ function App() {
         </button>
       )}
 
-      <Canvas
-        stocks={stocksForCanvas}
-        customInvestments={data}
-        loading={stocksLoading && !snapshotStocks}
-      />
-
-      <Legend />
+      <Tabs defaultValue="chart" className="w-full">
+        <TabsList>
+          <TabsTrigger value="chart">Chart</TabsTrigger>
+          <TabsTrigger value="table">Table</TabsTrigger>
+        </TabsList>
+        <TabsContent value="chart">
+          <Canvas
+            stocks={stocksForCanvas}
+            customInvestments={customInvestments}
+            loading={stocksLoading && !snapshotStocks}
+          />
+          <Legend />
+        </TabsContent>
+        <TabsContent value="table">
+          <StocksTable data={[...stocksForCanvas, ...customInvestments]} />
+        </TabsContent>
+      </Tabs>
 
       {stocksData?.errors && Object.keys(stocksData.errors).length > 0 && (
         <div className="warnings">
