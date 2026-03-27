@@ -63,7 +63,7 @@ function formatTooltipContent(stock: StockPosition): string {
         </div>
         <div class="tooltip-row">
           <span class="tooltip-label">Sector:</span>
-          <span class="tooltip-value">${data.sector}</span>
+          <span class="tooltip-value">${data.ImSquare_Sector}</span>
         </div>
         <div class="tooltip-row">
           <span class="tooltip-label">Dividend Yield:</span>
