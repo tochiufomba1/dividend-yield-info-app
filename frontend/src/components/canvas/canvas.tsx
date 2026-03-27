@@ -1,12 +1,14 @@
 import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import { draw } from './canvasUtils';
-import { sectors } from './constants';
-import type { StockData, StockPosition, CanvasConfig } from './types';
+import { GICSSectors, sectors } from './constants';
+import type { StockPosition, CanvasConfig } from './types';
 import type { CustomTickerData } from '@/hooks/useCustomTickers';
+import type { StockData } from '@/api/stocks';
 
 interface CanvasProps {
     stocks: StockData[];
     customInvestments: CustomTickerData[];
+    showGICSSectors: boolean,
     loading?: boolean;
     className?: string;
     width?: number;
@@ -23,6 +25,7 @@ interface Transform {
 export default function Canvas({
     stocks,
     customInvestments,
+    showGICSSectors,
     loading = false,
     className,
     width = 800,
@@ -71,7 +74,7 @@ export default function Canvas({
         draw(
             ctx,
             config,
-            sectors,
+            showGICSSectors?  GICSSectors : sectors,
             stocks,
             customInvestments,
             showLabels && transform.scale > 0.8, // Hide labels when zoomed out
@@ -79,7 +82,7 @@ export default function Canvas({
             customInvestmentsPostionsRef.current,
             transform
         );
-    }, [transform, config, stocks, showLabels]);
+    }, [transform, config, stocks, showLabels, showGICSSectors]);
 
     // Redraw when dependencies change
     useEffect(() => {
@@ -212,7 +215,7 @@ export default function Canvas({
             </div>
             <div class="tooltip-row">
               <span class="tooltip-label">Sector:</span>
-              <span class="tooltip-value">${(foundStock as StockPosition).data.sector}</span>
+              <span class="tooltip-value">${showGICSSectors ? (foundStock as StockPosition).data.GICS_Sector : (foundStock as StockPosition).data.ImSquare_Sector}</span>
             </div>
             <div class="tooltip-row">
               <span class="tooltip-label">Dividend Yield:</span>

@@ -1,4 +1,4 @@
-import type { StockData } from "@/components/canvas/types";
+import type { StockData } from "@/api/stocks";
 import { useState } from "react";
 
 export type CustomTickerData = StockData

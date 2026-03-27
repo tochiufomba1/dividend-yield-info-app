@@ -1,5 +1,6 @@
 import type { CustomTickerData } from '@/hooks/useCustomTickers';
-import type { StockData, StockPosition, CanvasConfig, Sector, SectorAngles } from './types';
+import type { StockPosition, CanvasConfig, Sector, SectorAngles } from './types';
+import type { StockData } from '@/api/stocks';
 
 /**
  * Convert yield percentage to radius on canvas
@@ -132,7 +133,7 @@ function drawStocks(
     const maxYield = yieldRanges[yieldRanges.length - 1];
 
     stocks.forEach(stock => {
-        const angles = getSectorAngle(stock.sector, sectors);
+        const angles = getSectorAngle(sectors.length == 11 ? stock.GICS_Sector : stock.ImSquare_Sector, sectors);
         const radius = yieldToRadius(stock.yield, maxYield, config.maxRadius);
 
         // Add random variation within sector (deterministic based on ticker)
@@ -154,7 +155,7 @@ function drawStocks(
         });
 
         // Get sector color
-        const sector = sectors.find(s => s.name === stock.sector);
+        const sector = sectors.find(s => s.name === (sectors.length == 11 ? stock.GICS_Sector : stock.ImSquare_Sector));
         const color = sector?.color || '#666';
 
         // Draw stock point

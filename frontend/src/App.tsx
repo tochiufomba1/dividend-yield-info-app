@@ -1,4 +1,3 @@
-
 import Legend from "./components/legend";
 import "./App.css"
 import { useState, useMemo } from "react";
@@ -15,6 +14,7 @@ import { useCustomTickers } from "./hooks/useCustomTickers";
 import { CustomTickerChips } from "./components/custom-ticker-chips";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import StocksTable from "./components/stocks-table";
+import { Toggle } from "@/components/ui/toggle"
 
 interface OptionType {
   value: string;
@@ -25,6 +25,7 @@ function App() {
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
   const [snapshotStocks, setSnapshotStocks] = useState<SnapshotEntry[] | null>(null);
   const { data: customInvestments, addCustomTicker, removeCustomTicker, clearCustomTickers, hasCustomTicker } = useCustomTickers()
+  const [GICSToggle, setGICSToggle] = useState<boolean>(false)
 
   // Fetch data for selected stocks
   const {
@@ -76,7 +77,7 @@ function App() {
     return selectedStocks
       .map(ticker => {
         const data = stocksData?.data?.[ticker]
-        return data ? { ticker, ...data } : null;
+        return data ? { ...data } : null;
       })
       .filter(isDefined); // Boolean
   }, [snapshotStocks, selectedStocks, stocksData]);
@@ -87,6 +88,16 @@ function App() {
 
       {/* Show All Stocks button — triggers background job */}
       <ShowAllButton onData={setSnapshotStocks} />
+
+      <Toggle
+        aria-label="Toggle GICS"
+        size="sm"
+        variant="outline"
+        pressed={GICSToggle} 
+        onPressedChange={() => setGICSToggle(!GICSToggle)}
+      >
+        GICS Sectors
+      </Toggle>
 
       {/* Individual stock search — hidden while snapshot is active */}
       {!snapshotStocks && (
@@ -196,6 +207,7 @@ function App() {
           <Canvas
             stocks={stocksForCanvas}
             customInvestments={customInvestments}
+            showGICSSectors={GICSToggle}
             loading={stocksLoading && !snapshotStocks}
           />
           <Legend />

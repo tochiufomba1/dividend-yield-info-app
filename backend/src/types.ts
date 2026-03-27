@@ -2,11 +2,13 @@
 export interface StockData {
     ticker: string;
     name: string;
-    sector: string;
+    GICS_Sector: string;
+    ImSquare_Sector: string;
     yield: number;
 }
 
 export interface AlphaVantageResponse {
+    Name?: string;
     Symbol?: string;
     Sector?: string;
     DividendYield?: string;

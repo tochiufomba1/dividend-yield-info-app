@@ -1,7 +1,8 @@
 export interface StockData {
-    ticker?: string;
+    ticker: string;
     name: string;
-    sector: string;
+    GICS_Sector: string;
+    ImSquare_Sector: string;
     yield: number;
 }
 

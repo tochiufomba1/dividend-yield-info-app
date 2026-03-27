@@ -1,3 +1,5 @@
+import type { StockData } from "@/api/stocks";
+
 export type JobStatus = 'idle' | 'running' | 'failed';
 
 export interface JobProgress {
@@ -8,15 +10,6 @@ export interface JobProgress {
 }
 
 export interface SnapshotEntry extends StockData {
-    ticker: string;
-}
-
-// Canvas component types
-export interface StockData {
-  ticker: string;
-  name: string;
-  sector: string;
-  yield: number;
 }
 
 export interface StockPosition {

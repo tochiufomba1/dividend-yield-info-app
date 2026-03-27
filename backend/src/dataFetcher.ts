@@ -197,8 +197,9 @@ export async function fetchStockFundamentals(ticker: string): Promise<StockData>
 
     return {
         ticker: response.Symbol,
-        name: response.Symbol, 
-        sector: response.Sector ? getSectorTranslation(response.Sector) : 'Unknown',
+        name: response.Name || response.Symbol,
+        GICS_Sector: response.Sector ? getGICSSectorTranslation(response.Sector) : 'Unknown',
+        ImSquare_Sector: response.Sector ? getSectorTranslation(response.Sector) : 'Unknown',
         yield: dividendYield,
     };
 }
@@ -348,6 +349,51 @@ export function getSectorTranslation(sector: string) {
         case "utilities":
         case "energy":
             sectorTranslation = "Energy"
+            break;
+        default:
+            sectorTranslation = "Unknown"
+            break;
+    }
+
+    return sectorTranslation
+}
+
+export function getGICSSectorTranslation(sector: string) {
+    let sectorTranslation;
+
+    switch (sector) {
+        case "CONSUMER CYCLICAL":
+            sectorTranslation = "Consumer Discretionary";
+            break;
+        case "CONSUMER DEFENSIVE":
+            sectorTranslation = "Consumer Staples";
+            break;
+        case "INDUSTRIALS":
+            sectorTranslation = "Consumer Discretionary";
+            break; 
+        case "TECHNOLOGY":
+            sectorTranslation = "Information Technology";
+            break;
+        case "COMMUNICATION SERVICES":
+            sectorTranslation = "Communication Services";
+            break;
+        case "HEALTHCARE":
+            sectorTranslation = "Healthcare";
+            break;
+        case "UTILITIES":
+            sectorTranslation = "Utilities";
+            break;
+        case "FINANCIAL SERVICES":
+            sectorTranslation = "Financials";
+            break;
+        case "BASIC MATERIALS":
+            sectorTranslation = "Materials";
+            break;
+        case "REAL ESTATE":
+            sectorTranslation = "Real Estate";
+            break;
+        case "ENERGY":
+            sectorTranslation = "Energy";
             break;
         default:
             sectorTranslation = "Unknown"

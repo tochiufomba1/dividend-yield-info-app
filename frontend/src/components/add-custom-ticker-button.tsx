@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import { Card, CardContent } from "./ui/card"
 import * as z from "zod"
-import { sectors } from "./canvas/constants"
+import { GICSSectors, sectors } from "./canvas/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field"
 import Input from "@mui/material/Input"
@@ -20,7 +20,8 @@ interface CustomTickerDialogProps {
 const AddCustomTickerFormSchema = z.object({
     ticker: z.string().min(1).max(6),
     name: z.string().min(1),
-    sector: z.enum(sectors.map(s => s.name)),
+    ImSquare_Sector: z.enum(sectors.map(s => s.name)),
+    GICS_Sector: z.enum(GICSSectors.map(s => s.name)),
     yield: z.optional(z.coerce.number()),
     netProfit: z.optional(z.coerce.number()),
     costInvestment: z.optional(z.coerce.number()),
@@ -47,7 +48,8 @@ export default function CustomTickerDialog({
             addTicker({
                 ticker: formValues.ticker,
                 name: formValues.name,
-                sector: formValues.sector,
+                ImSquare_Sector: formValues.ImSquare_Sector,
+                GICS_Sector: formValues.GICS_Sector,
                 yield: formValues.yield
             })
 
@@ -66,7 +68,8 @@ export default function CustomTickerDialog({
             {
                 ticker: formValues.ticker,
                 name: formValues.name,
-                sector: formValues.sector,
+                ImSquare_Sector: formValues.ImSquare_Sector,
+                GICS_Sector: formValues.GICS_Sector,
                 yield: roi
             }
         )
@@ -120,7 +123,8 @@ function AddCustomStockForm({
         defaultValues: {
             ticker: "EXAMP",
             name: "Example",
-            sector: "Unknown",
+            ImSquare_Sector: "Unknown",
+            GICS_Sector: "Unknown",
             yield: 0.00
         },
     })
@@ -171,12 +175,12 @@ function AddCustomStockForm({
                 />
 
                 <Controller
-                    name="sector"
+                    name="ImSquare_Sector"
                     control={control}
                     render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor="form-custom-sector">
-                                Sector
+                                ImSquare Sector
                             </FieldLabel>
                             <Select
                                 name={field.name}
@@ -192,6 +196,38 @@ function AddCustomStockForm({
                                 </SelectTrigger>
                                 <SelectContent position="item-aligned">
                                     {sectors.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+
+                            {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                            )}
+                        </Field>
+                    )}
+                />
+
+                <Controller
+                    name="GICS_Sector"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor="form-custom-sector">
+                                GICS Sector
+                            </FieldLabel>
+                            <Select
+                                name={field.name}
+                                value={field.value}
+                                onValueChange={field.onChange}
+                            >
+                                <SelectTrigger
+                                    id="form-custom-sector"
+                                    aria-invalid={fieldState.invalid}
+                                    className="min-w-120px"
+                                >
+                                    <SelectValue placeholder="Select a sector" />
+                                </SelectTrigger>
+                                <SelectContent position="item-aligned">
+                                    {GICSSectors.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
 
@@ -249,7 +285,8 @@ function AddCustomInvestmentForm({
         defaultValues: {
             ticker: "EXAMP",
             name: "Example",
-            sector: "Unknown",
+            ImSquare_Sector: "Unknown",
+            GICS_Sector: "Unknown",
             netProfit: 1.00,
             costInvestment: 1.00
         },
@@ -301,12 +338,12 @@ function AddCustomInvestmentForm({
                 />
 
                 <Controller
-                    name="sector"
+                    name="ImSquare_Sector"
                     control={control}
                     render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor="form-custom-sector">
-                                Sector
+                                ImSquare Sector
                             </FieldLabel>
                             <Select
                                 name={field.name}
@@ -322,6 +359,38 @@ function AddCustomInvestmentForm({
                                 </SelectTrigger>
                                 <SelectContent position="item-aligned">
                                     {sectors.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+
+                            {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                            )}
+                        </Field>
+                    )}
+                />
+
+                <Controller
+                    name="GICS_Sector"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor="form-custom-sector">
+                                GICS Sector
+                            </FieldLabel>
+                            <Select
+                                name={field.name}
+                                value={field.value}
+                                onValueChange={field.onChange}
+                            >
+                                <SelectTrigger
+                                    id="form-custom-sector"
+                                    aria-invalid={fieldState.invalid}
+                                    className="min-w-120px"
+                                >
+                                    <SelectValue placeholder="Select a sector" />
+                                </SelectTrigger>
+                                <SelectContent position="item-aligned">
+                                    {GICSSectors.map(s => <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
 
