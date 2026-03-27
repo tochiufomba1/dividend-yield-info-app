@@ -1,12 +1,12 @@
-import { sectors } from "./canvas/constants";
+import { GICSSectors, sectors } from "./canvas/constants";
 
 
-export default function Legend() {
+export default function Legend({ showGICSSectors }: { showGICSSectors: boolean }) {
 
     return (
         <div className="legend">
             {
-                sectors.map((sector) => (
+                showGICSSectors ? GICSSectors.map((sector) => (
                     <div key={sector.name} className="legend-item">
                         <div
                             className="legend-color"
@@ -15,6 +15,16 @@ export default function Legend() {
                         <span>{sector.name}</span>
                     </div>
                 ))
+                    :
+                    sectors.map((sector) => (
+                        <div key={sector.name} className="legend-item">
+                            <div
+                                className="legend-color"
+                                style={{ backgroundColor: sector.color }}
+                            />
+                            <span>{sector.name}</span>
+                        </div>
+                    ))
             }
         </div>
     )

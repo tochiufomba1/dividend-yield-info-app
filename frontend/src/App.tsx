@@ -210,7 +210,7 @@ function App() {
             showGICSSectors={GICSToggle}
             loading={stocksLoading && !snapshotStocks}
           />
-          <Legend />
+          <Legend showGICSSectors={GICSToggle} />
         </TabsContent>
         <TabsContent value="table">
           <StocksTable data={[...stocksForCanvas, ...customInvestments]} />
