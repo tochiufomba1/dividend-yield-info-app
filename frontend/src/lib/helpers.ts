@@ -1,4 +1,4 @@
-import { searchTickers } from "@/api/stocks";
+import { searchTickers, type StockData } from "@/api/stocks";
 import type { OptionType } from "./types";
 
 // Convert yield to radius
@@ -175,19 +175,81 @@ export function populateToolTip(
 // ── AsyncSelect load ─────────────────────────────────────────────────────
 export const loadOptions = async (inputValue: string): Promise<OptionType[]> => {
     try {
-      // Don't search for very short queries
-      if (!inputValue) return [];
+        // Don't search for very short queries
+        if (!inputValue) return [];
 
-      // Search backend for matching tickers
-      const tickers = await searchTickers(inputValue, 50);
+        // Search backend for matching tickers
+        const tickers = await searchTickers(inputValue, 50);
 
-      // Convert to react-select format
-      return tickers.map(ticker => ({
-        value: ticker,
-        label: ticker,
-      }));
+        // Convert to react-select format
+        return tickers.map(ticker => ({
+            value: ticker,
+            label: ticker,
+        }));
     } catch (error) {
-      console.error('Error loading options:', error);
-      return [];
+        console.error('Error loading options:', error);
+        return [];
     }
-  };
+};
+
+/**
+ * Calculate dynamic yield ranges for the canvas using the 95th percentile
+ */
+export function calculateYieldRangesPercentile(
+    stocks: StockData[],
+    numRanges: number = 6,
+    percentile: number = 95
+): number[] {
+    if (stocks.length === 0) {
+        return [0, 2, 4, 6, 8, 10]; // Fallback
+    }
+
+    // Extract all yields
+    const yields = stocks.map(s => s.yield).filter(y => y > 0);
+
+    if (yields.length === 0) {
+        return [0, 2, 4, 6, 8, 10];
+    }
+
+    // Sort yields
+    const sorted = [...yields].sort((a, b) => a - b);
+
+    // Get percentile value
+    const index = Math.floor((percentile / 100) * sorted.length);
+    const maxYield = sorted[Math.min(index, sorted.length - 1)];
+
+    // Round up to next nice number (2, 5, 10, 20, 50, etc.)
+    const roundedMax = roundToNiceNumber(maxYield);
+
+    // Generate evenly spaced ranges
+    const ranges: number[] = [0];
+    const step = roundedMax / (numRanges - 1);
+
+    for (let i = 1; i < numRanges; i++) {
+        ranges.push(Math.round(step * i * 10) / 10); // Round to 1 decimal
+    }
+
+    return ranges;
+}
+
+/**
+ * Round to a "nice" number for cleaner axis labels
+ * Examples: 7.3 → 10, 23 → 25, 47 → 50
+ */
+function roundToNiceNumber(value: number): number {
+    const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+    const normalized = value / magnitude;
+
+    let nice: number;
+    if (normalized < 1.5) {
+        nice = 2;
+    } else if (normalized < 3) {
+        nice = 5;
+    } else if (normalized < 7) {
+        nice = 10;
+    } else {
+        nice = 10;
+    }
+
+    return nice * magnitude;
+}

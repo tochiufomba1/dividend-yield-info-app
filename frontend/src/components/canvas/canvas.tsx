@@ -4,6 +4,7 @@ import { GICSSectors, sectors } from './constants';
 import type { StockPosition, CanvasConfig } from './types';
 import type { CustomTickerData } from '@/hooks/useCustomTickers';
 import type { StockData } from '@/api/stocks';
+import { calculateYieldRangesPercentile } from '@/lib/helpers';
 
 interface CanvasProps {
     stocks: StockData[];
@@ -14,6 +15,8 @@ interface CanvasProps {
     width?: number;
     height?: number;
     showLabels?: boolean;
+    numRanges?: number; // Number of concentric circles (default: 7)
+    percentile?: number; // Percentile to use for max (default: 95)
 }
 
 interface Transform {
@@ -31,6 +34,8 @@ export default function Canvas({
     width = 800,
     height = 800,
     showLabels = true,
+    numRanges = 6,
+    percentile = 95,
 }: CanvasProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
@@ -47,6 +52,17 @@ export default function Canvas({
         offsetY: 0
     });
 
+    // Calculate dynamic yield ranges based on actual stock data
+    const yieldRanges = useMemo(() => {
+        if (stocks.length === 0) {
+            // Default ranges when no stocks
+            return [0, 2, 4, 6, 8, 10];
+        }
+
+        // Use percentile-based calculation (handles outliers well)
+        return calculateYieldRangesPercentile(stocks, numRanges, percentile);
+    }, [stocks, numRanges, percentile]);
+
     // Panning state
     const [isPanning, setIsPanning] = useState(false);
     const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -56,7 +72,7 @@ export default function Canvas({
         centerX: width / 2,
         centerY: height / 2,
         maxRadius: Math.min(width, height) * 0.4375, // 350/800 ratio
-        yieldRanges: [0, 10, 20, 30, 40, 50],
+        yieldRanges,
     }), [width, height]);
 
     // Draw function - memoized with useCallback
