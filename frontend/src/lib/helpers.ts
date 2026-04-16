@@ -1,3 +1,6 @@
+import { searchTickers } from "@/api/stocks";
+import type { OptionType } from "./types";
+
 // Convert yield to radius
 function yieldToRadius(yieldPercent: number, yieldRanges: number[], maxRadius: number) {
     const maxYield = yieldRanges[yieldRanges.length - 1];
@@ -168,3 +171,23 @@ export function populateToolTip(
         canvas.current.style.cursor = 'crosshair';
     }
 }
+
+// ── AsyncSelect load ─────────────────────────────────────────────────────
+export const loadOptions = async (inputValue: string): Promise<OptionType[]> => {
+    try {
+      // Don't search for very short queries
+      if (!inputValue) return [];
+
+      // Search backend for matching tickers
+      const tickers = await searchTickers(inputValue, 50);
+
+      // Convert to react-select format
+      return tickers.map(ticker => ({
+        value: ticker,
+        label: ticker,
+      }));
+    } catch (error) {
+      console.error('Error loading options:', error);
+      return [];
+    }
+  };

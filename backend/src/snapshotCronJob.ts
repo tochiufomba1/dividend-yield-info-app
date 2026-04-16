@@ -1,5 +1,5 @@
 import { RedisClientType } from "redis"
-import { createRedisClient } from "./helpers"
+import { createRedisClient } from "./lib/helpers"
 import { runSnapshotJob } from "./snapshotJob"
 
 async function runCronJob() {

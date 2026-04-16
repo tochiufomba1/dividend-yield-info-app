@@ -1,9 +1,10 @@
 import { useSnapshot } from "@/hooks/useSnapshot";
-import type { SnapshotEntry } from "./canvas/types";
-import { useEffect } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Button } from '@/components/ui/button'
+import type { ActiveSnapshotState } from "@/lib/types";
 
 interface ShowAllButtonProps {
-    onData: (data: SnapshotEntry[]) => void;
+    onData: (data: ActiveSnapshotState) => void;
 }
 
 export function ShowAllButton({ onData }: ShowAllButtonProps) {
@@ -11,26 +12,20 @@ export function ShowAllButton({ onData }: ShowAllButtonProps) {
         progress,
         data,
         error,
-        percentComplete,
         isRunning,
         isReady,
         triggerJob,
     } = useSnapshot();
 
-    // Pass data up when it arrives
-    useEffect(() => {
-        if (data) {
-            onData(data);
-        }
-    }, [data, onData]);
+    const displayLabel = 'Loaded Dividend Stocks'
 
     // ── Already have data ───────────────────────────────────────────────────
-    if (isReady) {
+    if (isReady && data) {
         return (
             <div className="show-all-container">
-                <span className="snapshot-ready">
+                <Button onClick={() => { onData({ snapshotName: displayLabel, snapshotStocks: data }) }}>
                     ✅ {data!.length} dividend-paying stocks loaded
-                </span>
+                </Button>
             </div>
         );
     }
@@ -38,48 +33,46 @@ export function ShowAllButton({ onData }: ShowAllButtonProps) {
     // ── Job is running ───────────────────────────────────────────────────────
     if (isRunning && progress) {
         return (
-            <div className="show-all-container">
-                <p className="snapshot-status">
-                    Building snapshot… {progress.completed} / {progress.total} tickers
-                    {' '}(~{progress.estimatedMinutes} min remaining)
-                </p>
-                <div className="progress-bar-track">
-                    <div
-                        className="progress-bar-fill"
-                        style={{ width: `${percentComplete}%` }}
-                    />
-                </div>
-                <span className="progress-percent">{percentComplete}%</span>
-            </div>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button disabled={true}>Building snapshot of all tickers...</Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    {progress.completed} / {progress.total} tickers{' '}(~{progress.estimatedMinutes} min remaining)
+                </TooltipContent>
+            </Tooltip>
         );
     }
 
     // ── Error ────────────────────────────────────────────────────────────────
     if (error) {
         return (
-            <div className="show-all-container">
-                <span className="snapshot-error">⚠️ {error}</span>
-                <button className="show-all-btn" onClick={triggerJob}>
-                    Retry
-                </button>
-            </div>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full'
+                        onClick={triggerJob}>
+                        Retry
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    ⚠️ {error}
+                </TooltipContent>
+            </Tooltip>
         );
     }
 
     // ── Default: prompt user to trigger the job ──────────────────────────────
     return (
-        <div className="show-all-container">
-            <button
-                className="show-all-btn"
-                onClick={triggerJob}
-                disabled={isRunning}
-                title="Fetches all dividend-paying stocks in the background. This may take several minutes."
-            >
-                Show All Dividend Stocks
-            </button>
-            <span className="show-all-hint">
-                ⏱ This builds a full dataset and may take a few minutes
-            </span>
-        </div>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                    onClick={triggerJob} disabled={isRunning}>Show All Dividend Stocks</Button>
+            </TooltipTrigger>
+            <TooltipContent>
+                Fetches all dividend-paying stocks in the background. This may take several minutes.
+            </TooltipContent>
+        </Tooltip>
     );
 }

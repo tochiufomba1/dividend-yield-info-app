@@ -7,7 +7,7 @@ import {
     getJobProgress,
     getSnapshot,
     cancelJob,
-} from  './snapshotJob';
+} from  '../snapshotJob';
 
 const triggerLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour

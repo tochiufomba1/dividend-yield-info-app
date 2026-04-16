@@ -1,7 +1,7 @@
 import express, { type Request, type Response, type NextFunction, Router } from 'express';
 import { type RedisClientType } from 'redis';
 import rateLimit from 'express-rate-limit';
-import { fetcher, fetchBatch } from './dataFetcher';
+import { fetcher, fetchBatch } from '../fetchers/dataFetcher';
 
 interface TickerParams {
     ticker: string;

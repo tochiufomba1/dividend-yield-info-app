@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from "redis";
-import config from "./config/config";
+import config from "../config/config";
 
 export async function createRedisClient() {
     const redisClient: RedisClientType = createClient({

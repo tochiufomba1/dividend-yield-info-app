@@ -1,6 +1,6 @@
 import { type RedisClientType } from 'redis';
-import config from './config/config';
-import { NetworkError, RateLimitError, ValidationError, SECTickerResponse, StockData, AlphaVantageResponse } from './types';
+import config from '../config/config';
+import { NetworkError, RateLimitError, ValidationError, SECTickerResponse, StockData, AlphaVantageResponse } from '../lib/types';
 
 // Configuration constants
 const TICKER_EXPIRY_TIME = 1209600; // 2 weeks in seconds

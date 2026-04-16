@@ -4,10 +4,7 @@ import { useState, useMemo } from "react";
 import { useBatchStocks } from "./hooks/useStocks";
 import AsyncSelect from 'react-select/async';
 import type { MultiValue } from 'react-select';
-import { searchTickers } from './api/stocks';
 import Canvas from "./components/canvas/canvas";
-import type { SnapshotEntry } from "./components/canvas/types";
-import { ShowAllButton } from "./components/show-all-button";
 import { isDefined } from "./lib/utils";
 import CustomTickerDialog from "./components/add-custom-ticker-button";
 import { useCustomTickers } from "./hooks/useCustomTickers";
@@ -15,15 +12,13 @@ import { CustomTickerChips } from "./components/custom-ticker-chips";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import StocksTable from "./components/stocks-table";
 import { Toggle } from "@/components/ui/toggle"
-
-interface OptionType {
-  value: string;
-  label: string;
-}
+import type { ActiveSnapshotState, OptionType } from "./lib/types";
+import IndexToggle from "./components/index-toggle";
+import { loadOptions } from "./lib/helpers";
 
 function App() {
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
-  const [snapshotStocks, setSnapshotStocks] = useState<SnapshotEntry[] | null>(null);
+  const [selectedSnapshot, setSelectedSnapshot] = useState<ActiveSnapshotState | null>(null);
   const { data: customInvestments, addCustomTicker, removeCustomTicker, clearCustomTickers, hasCustomTicker } = useCustomTickers()
   const [GICSToggle, setGICSToggle] = useState<boolean>(false)
 
@@ -34,29 +29,9 @@ function App() {
     isError: stocksError
   } = useBatchStocks(selectedStocks, selectedStocks.length > 0)
 
-  // ── AsyncSelect load ─────────────────────────────────────────────────────
-  const loadOptions = async (inputValue: string): Promise<OptionType[]> => {
-    try {
-      // Don't search for very short queries
-      if (!inputValue) return [];
-
-      // Search backend for matching tickers
-      const tickers = await searchTickers(inputValue, 50);
-
-      // Convert to react-select format
-      return tickers.map(ticker => ({
-        value: ticker,
-        label: ticker,
-      }));
-    } catch (error) {
-      console.error('Error loading options:', error);
-      return [];
-    }
-  };
-
   const handleChange = (selected: MultiValue<OptionType>) => {
     setSelectedStocks(selected.map(option => option.value));
-    setSnapshotStocks(null); // Clear snapshot if user selects manually
+    setSelectedSnapshot(null); // Clear snapshot if user selects manually
   };
 
   // Get current selected options for react-select
@@ -72,7 +47,7 @@ function App() {
   // When snapshot is active, show all snapshot stocks on the canvas.
   // Otherwise show individually selected stocks.
   const stocksForCanvas = useMemo(() => {
-    if (snapshotStocks) return snapshotStocks;
+    if (selectedSnapshot?.snapshotStocks) return selectedSnapshot.snapshotStocks;
 
     return selectedStocks
       .map(ticker => {
@@ -80,27 +55,26 @@ function App() {
         return data ? { ...data } : null;
       })
       .filter(isDefined); // Boolean
-  }, [snapshotStocks, selectedStocks, stocksData]);
+  }, [selectedSnapshot, selectedStocks, stocksData]);
 
   return (
     <div className="container">
       <h1>Dividend Yield</h1>
 
-      {/* Show All Stocks button — triggers background job */}
-      <ShowAllButton onData={setSnapshotStocks} />
-
       <Toggle
         aria-label="Toggle GICS"
         size="sm"
         variant="outline"
-        pressed={GICSToggle} 
+        pressed={GICSToggle}
         onPressedChange={() => setGICSToggle(!GICSToggle)}
       >
         GICS Sectors
       </Toggle>
 
+      <IndexToggle onSelect={setSelectedSnapshot}  />
+
       {/* Individual stock search — hidden while snapshot is active */}
-      {!snapshotStocks && (
+      {!selectedSnapshot && (
         <div className="controls">
           <div className="stock-selector">
             <label htmlFor="stock-select">Select Stocks:</label>
@@ -188,11 +162,11 @@ function App() {
       )}
 
       {/* Back to search button when snapshot is showing */}
-      {snapshotStocks && (
+      {selectedSnapshot && (
         <button
           className="clear-button"
           style={{ marginBottom: 16 }}
-          onClick={() => setSnapshotStocks(null)}
+          onClick={() => setSelectedSnapshot(null)}
         >
           ← Back to search
         </button>
@@ -208,7 +182,7 @@ function App() {
             stocks={stocksForCanvas}
             customInvestments={customInvestments}
             showGICSSectors={GICSToggle}
-            loading={stocksLoading && !snapshotStocks}
+            loading={stocksLoading && !selectedSnapshot}
           />
           <Legend showGICSSectors={GICSToggle} />
         </TabsContent>

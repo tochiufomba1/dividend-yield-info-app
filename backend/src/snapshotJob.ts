@@ -1,6 +1,6 @@
 import { RedisClientType } from 'redis';
-import { fetchStockFundamentals } from './dataFetcher';
-import type { StockData } from './types';
+import { fetchStockFundamentals } from './fetchers/dataFetcher';
+import type { StockData } from './lib/types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

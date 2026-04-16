@@ -2,11 +2,11 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { createClient, type RedisClientType } from 'redis';
-import { createStockRoutes, errorHandler } from './routes';
+import { createStockRoutes, errorHandler } from './routes/routes';
 import { Server } from 'http';
 import config from './config/config';
-import { runSnapshotJob } from './snapshotJob';
-import { createSnapshotRoutes } from './snapshotRoutes';
+import { createSnapshotRoutes } from './routes/snapshotRoutes';
+import { createIndexSnapshotRoutes } from './routes/indexSnapshotRoutes';
 
 export interface AppComponents {
     app: Express;
@@ -65,6 +65,8 @@ async function createApp(): Promise<AppComponents> {
     app.use('/api/stocks', createStockRoutes(redisClient));
 
     app.use('/api/snapshot', createSnapshotRoutes(redisClient));
+
+    app.use('/api/index', createIndexSnapshotRoutes(redisClient));
 
     // 404 handler
     app.use((_, res) => {
