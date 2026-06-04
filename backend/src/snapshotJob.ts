@@ -1,5 +1,5 @@
 import { RedisClientType } from 'redis';
-import { fetchStockFundamentals } from './fetchers/dataFetcher';
+import { fetcher, fetchStockFundamentals } from './fetchers/dataFetcher';
 import type { StockData } from './lib/types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -10,8 +10,8 @@ const REQUESTS_PER_MINUTE = parseInt(process.env.AV_REQUESTS_PER_MINUTE ?? '60',
 const MS_PER_REQUEST = Math.ceil((60 / REQUESTS_PER_MINUTE) * 1000); // e.g. 800ms at 75/min
 
 // Redis keys
-const SNAPSHOT_KEY     = 'snapshot:all';           // The finished dataset
-const JOB_STATUS_KEY   = 'snapshot:job:status';    // 'idle' | 'running' | 'failed'
+const SNAPSHOT_KEY = 'snapshot:all';           // The finished dataset
+const JOB_STATUS_KEY = 'snapshot:job:status';    // 'idle' | 'running' | 'failed'
 const JOB_PROGRESS_KEY = 'snapshot:job:progress';  // { completed, total, startedAt }
 
 // Cache the finished snapshot for 24 hours; job runs once a day via cron
@@ -37,9 +37,9 @@ export interface SnapshotEntry extends StockData {
 const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 async function getAllTickers(redisClient: RedisClientType): Promise<string[]> {
-    const raw = await redisClient.get('tickers');
-    if (!raw) throw new Error('Tickers not in cache. Run fetcher("tickers", ...) first.');
-    return JSON.parse(raw) as string[];
+    let tickersJSONString = await fetcher("tickers", redisClient)
+    
+    return JSON.parse(tickersJSONString) as string[];
 }
 
 // ─── Job ──────────────────────────────────────────────────────────────────────
@@ -60,9 +60,9 @@ export async function runSnapshotJob(redisClient: RedisClientType): Promise<void
     }
 
     const tickers = await getAllTickers(redisClient);
-    const total    = tickers.length;
-    let   completed = 0;
-    let   failed    = 0;
+    const total = tickers.length;
+    let completed = 0;
+    let failed = 0;
 
     // Accumulate results here; write to Redis in one shot at the end
     const snapshot: SnapshotEntry[] = [];
@@ -107,7 +107,7 @@ export async function runSnapshotJob(redisClient: RedisClientType): Promise<void
 
         // Update progress counter in Redis (cheap write every N tickers)
         if (completed % 50 === 0 || completed === total) {
-            const remaining  = total - completed - failed;
+            const remaining = total - completed - failed;
             const estimatedMinutes = Math.ceil(remaining / REQUESTS_PER_MINUTE);
 
             await redisClient.set(JOB_PROGRESS_KEY, JSON.stringify({
